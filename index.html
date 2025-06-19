@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Elegant Stopwatch with Laps</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(145deg, #e3f0ff, #fdfdff);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+      padding: 20px;
+    }
+
+    .stopwatch {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 40px 40px 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .time {
+      font-size: 2.8em;
+      margin-bottom: 30px;
+      font-family: 'Nunito', sans-serif;
+      letter-spacing: 2px;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .buttons button {
+      background-color: #7aa4ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1em;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .buttons button:hover {
+      background-color: #5c8efc;
+    }
+
+    .buttons button:disabled {
+      background-color: #b0c8f9;
+      cursor: not-allowed;
+    }
+
+    .laps {
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 20px;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+      font-size: 0.95em;
+    }
+
+    .laps p {
+      margin: 6px 0;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .lap-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="stopwatch">
+  <div class="time" id="display">00:00:00.000</div>
+  <div class="buttons">
+    <button onclick="start()">Start</button>
+    <button onclick="stop()">Stop</button>
+    <button onclick="reset()">Reset</button>
+    <button onclick="lap()">Lap</button>
+  </div>
+  <div class="laps" id="laps">
+    <div class="lap-title">Lap Times:</div>
+  </div>
+</div>
+
+<script>
+  let startTime = 0;
+  let elapsedTime = 0;
+  let timerInterval;
+  let running = false;
+  let lapCount = 0;
+
+  function timeToString(time) {
+    let hrs = Math.floor(time / 3600000);
+    let mins = Math.floor((time % 3600000) / 60000);
+    let secs = Math.floor((time % 60000) / 1000);
+    let ms = time % 1000;
+
+    return (
+      (hrs < 10 ? "0" + hrs : hrs) + ":" +
+      (mins < 10 ? "0" + mins : mins) + ":" +
+      (secs < 10 ? "0" + secs : secs) + "." +
+      ms.toString().padStart(3, "0")
+    );
+  }
+
+  function start() {
+    if (!running) {
+      startTime = Date.now() - elapsedTime;
+      timerInterval = setInterval(() => {
+        elapsedTime = Date.now() - startTime;
+        document.getElementById("display").textContent = timeToString(elapsedTime);
+      }, 10);
+      running = true;
+    }
+  }
+
+  function stop() {
+    if (running) {
+      clearInterval(timerInterval);
+      running = false;
+    }
+  }
+
+  function reset() {
+    clearInterval(timerInterval);
+    elapsedTime = 0;
+    running = false;
+    lapCount = 0;
+    document.getElementById("display").textContent = "00:00:00.000";
+    document.getElementById("laps").innerHTML = '<div class="lap-title">Lap Times:</div>';
+  }
+
+  function lap() {
+    if (running) {
+      lapCount++;
+      const lapTime = timeToString(elapsedTime);
+      const lapElement = document.createElement("p");
+      lapElement.textContent = `Lap ${lapCount}: ${lapTime}`;
+      document.getElementById("laps").appendChild(lapElement);
+    }
+  }
+</script>
+
+</body>
+</html>
